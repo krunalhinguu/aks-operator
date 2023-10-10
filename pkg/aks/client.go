@@ -13,7 +13,7 @@ import (
 	aksv1 "github.com/rancher/aks-operator/pkg/apis/aks.cattle.io/v1"
 	"github.com/rancher/aks-operator/pkg/utils"
 	"github.com/rancher/machine/drivers/azure/azureutil"
-	wranglerv1 "github.com/rancher/wrangler/pkg/generated/controllers/core/v1"
+	wranglerv1 "github.com/rancher/wrangler/v2/pkg/generated/controllers/core/v1"
 	"github.com/sirupsen/logrus"
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
