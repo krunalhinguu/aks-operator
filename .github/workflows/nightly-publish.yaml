@@ -50,7 +50,8 @@ jobs:
       - name: Delete tagged images older than 7 days
         uses: actions/delete-package-versions@v5
         with:
-          package-name: container/aks-operator
+          owner: krunalhinguu
+          package-name: aks-operator
           package-type: container
           min-versions-to-keep: 1
     
