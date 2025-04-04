@@ -38,27 +38,36 @@ jobs:
   delete-ghcr-images:
     runs-on: ubuntu-latest
     steps:
-      - name: Delete GHCR image versions
-        env:
-          GH_TOKEN: ${{ secrets.GHCR_TOKEN }}  # Use PAT with `packages:read,write,delete`
-          OWNER: krunalhinguu  # Change this
-          IMAGE: aks-operator       # Change this
-        run: |
-          echo "Fetching versions for ghcr.io/$OWNER/$IMAGE"
+      # - name: Delete GHCR image versions
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GHCR_TOKEN }}  # Use PAT with `packages:read,write,delete`
+      #     OWNER: krunalhinguu  # Change this
+      #     IMAGE: aks-operator       # Change this
+      #   run: |
+      #     echo "Fetching versions for ghcr.io/$OWNER/$IMAGE"
 
-          response=$(curl -s -H "Authorization: Bearer $GH_TOKEN" \
-                          -H "Accept: application/vnd.github+json" \
-                          "https://api.github.com/users/$OWNER/packages/container/$IMAGE/versions")
+      #     response=$(curl -s -H "Authorization: Bearer $GH_TOKEN" \
+      #                     -H "Accept: application/vnd.github+json" \
+      #                     "https://api.github.com/users/$OWNER/packages/container/$IMAGE/versions")
 
-          echo "Raw API response:"
-          echo "$response" | jq
+      #     echo "Raw API response:"
+      #     echo "$response" | jq
 
-          versions=$(echo "$response" | jq -r '.[] | .id')
+      #     versions=$(echo "$response" | jq -r '.[] | .id')
 
-          for version in $versions; do
-            echo "Deleting version ID: $version"
-            curl -X DELETE \
-                -H "Authorization: Bearer $GH_TOKEN" \
-                -H "Accept: application/vnd.github+json" \
-                "https://api.github.com/users/$OWNER/packages/container/$IMAGE/versions/$version"
-          done
+      #     for version in $versions; do
+      #       echo "Deleting version ID: $version"
+      #       curl -X DELETE \
+      #           -H "Authorization: Bearer $GH_TOKEN" \
+      #           -H "Accept: application/vnd.github+json" \
+      #           "https://api.github.com/users/$OWNER/packages/container/$IMAGE/versions/$version"
+      #     done
+        
+      - name: Delete old package versions from GHCR
+        uses: actions/delete-package-versions@v4
+        with:
+          package-name: 'aks-operator'  # Replace with your image name
+          package-type: 'container'  # Specify it's a container image
+          min-versions-to-keep: 3  # Keep at least 3 versions
+          token: ${{ secrets.GHCR_TOKEN }}  # Use your token stored in GitHub Secrets
+          owner: 'krunalhinguu'  # Replace with your GitHub username (for personal account)
