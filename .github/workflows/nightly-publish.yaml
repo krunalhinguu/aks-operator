@@ -3,6 +3,7 @@ on:
   schedule:
     - cron: '0 1 * * *'
   workflow_dispatch:
+
 jobs:
   publish_nightly:
     uses: rancher-sandbox/highlander-reusable-workflows/.github/workflows/operator-with-latest-rancher-build.yaml@main
@@ -10,6 +11,14 @@ jobs:
       operator_name: aks-operator
       operator_commit: ${{ github.sha }}
   
+  test_token:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show actor
+        run: 'echo "Actor: ${{ github.actor }}"'
+      - name: Test auth with GITHUB_TOKEN
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | head -c 20
+
   publish_images:
     permissions:
       packages: write # Required for pushing images to ghcr.io
@@ -29,38 +38,7 @@ jobs:
         run: echo "TAG=v0.0.0-$(date +'%Y%m%d')" >> "$GITHUB_ENV"
       - name: Build and push image
         env:
-          REPO: ghcr.io/rancher
+          REPO: ghcr.io/krunalhinguu
         run: |
           make image-push
 
-  publish_charts:
-    permissions:
-      packages: write # Required for pushing charts to ghcr.io
-    runs-on: ubuntu-latest
-    needs: publish_images
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Login to GHCR registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Install Helm
-        uses: azure/setup-helm@v4
-        with:
-          version: 3.8.0
-      - name: Set image tag and chart version
-        run: |
-          echo "TAG=v0.0.0-$(date +'%Y%m%d')" >> "$GITHUB_ENV"
-          echo "CHART_VERSION=$(date +'%Y%m%d')" >> "$GITHUB_ENV"
-      - name: Build charts
-        env:
-          REPO: ghcr.io/rancher # used in the Helm chart values.yaml
-        run: |
-          make charts
-      - name: Push charts
-        run: |
-          helm push bin/rancher-aks-operator-$CHART_VERSION.tgz oci://ghcr.io/${{ github.repository_owner }}/rancher-aks-operator-chart
-          helm push bin/rancher-aks-operator-crd-$CHART_VERSION.tgz oci://ghcr.io/${{ github.repository_owner }}/rancher-aks-operator-crd-chart
