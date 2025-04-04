@@ -70,5 +70,5 @@ jobs:
           package-name: 'aks-operator'  # Replace with your image name
           package-type: 'container'  # Specify it's a container image
           min-versions-to-keep: 1  # Keep at least 3 versions
-          token: ${{ secrets.GHCR_TOKEN }}  # Use your token stored in GitHub Secrets
+          token: ${{ secrets.GITHUB_TOKEN }}  # Use your token stored in GitHub Secrets
           owner: 'krunalhinguu'  # Replace with your GitHub username (for personal account)
