@@ -5,12 +5,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish_nightly:
-    uses: rancher-sandbox/highlander-reusable-workflows/.github/workflows/operator-with-latest-rancher-build.yaml@main
-    with:
-      operator_name: aks-operator
-      operator_commit: ${{ github.sha }}
-  
   test_token:
     runs-on: ubuntu-latest
     steps:
@@ -19,28 +13,28 @@ jobs:
       - name: Test auth with GITHUB_TOKEN
         run: echo "${{ secrets.GITHUB_TOKEN }}" | head -c 20
 
-  publish_images:
-    permissions:
-      packages: write # Required for pushing images to ghcr.io
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Login to GHCR registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2 # v3.10.0
-      - name: Set image tag
-        run: echo "TAG=v0.0.0-123456" >> "$GITHUB_ENV"
-      - name: Build and push image
-        env:
-          REPO: ghcr.io/krunalhinguu
-        run: |
-          make image-push
+  # publish_images:
+  #   permissions:
+  #     packages: write # Required for pushing images to ghcr.io
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #     - name: Login to GHCR registry
+  #       uses: docker/login-action@v3
+  #       with:
+  #         registry: ghcr.io
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Setup Docker Buildx
+  #       uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2 # v3.10.0
+  #     - name: Set image tag
+  #       run: echo "TAG=v0.0.0-123456" >> "$GITHUB_ENV"
+  #     - name: Build and push image
+  #       env:
+  #         REPO: ghcr.io/krunalhinguu
+  #       run: |
+  #         make image-push
 
   cleanup_old_images:
     permissions:
