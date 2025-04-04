@@ -56,12 +56,12 @@ jobs:
       - name: Delete untagged images
         uses: actions/delete-package-versions@v5
         with:
-          package-name: krunalhinguu/aks-operator
+          package-name: aks-operator
           package-type: container
           delete-only-untagged-versions: true
       - name: Delete tagged images older than 7 days
         uses: actions/delete-package-versions@v5
         with:
-          package-name: krunalhinguu/aks-operator
+          package-name: aks-operator
           package-type: container
     
