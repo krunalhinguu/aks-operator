@@ -52,4 +52,5 @@ jobs:
         with:
           package-name: aks-operator
           package-type: container
+          min-versions-to-keep: 1
     
