@@ -46,17 +46,19 @@ jobs:
         run: |
           echo "Fetching versions for ghcr.io/$OWNER/$IMAGE"
 
-          # Get versions
-          versions=$(curl -s -H "Authorization: Bearer $GH_TOKEN" \
+          response=$(curl -s -H "Authorization: Bearer $GH_TOKEN" \
                           -H "Accept: application/vnd.github+json" \
-                          "https://api.github.com/orgs/$OWNER/packages/container/$IMAGE/versions" | jq -r '.[].id')
+                          "https://api.github.com/orgs/$OWNER/packages/container/$IMAGE/versions")
 
-          # Loop and delete
+          echo "Raw API response:"
+          echo "$response" | jq
+
+          versions=$(echo "$response" | jq -r '.[] | .id')
+
           for version in $versions; do
             echo "Deleting version ID: $version"
             curl -X DELETE \
-                 -H "Authorization: Bearer $GH_TOKEN" \
-                 -H "Accept: application/vnd.github+json" \
-                 "https://api.github.com/orgs/$OWNER/packages/container/$IMAGE/versions/$version"
+                -H "Authorization: Bearer $GH_TOKEN" \
+                -H "Accept: application/vnd.github+json" \
+                "https://api.github.com/orgs/$OWNER/packages/container/$IMAGE/versions/$version"
           done
-    
