@@ -64,5 +64,4 @@ jobs:
         with:
           package-name: krunalhinguu/aks-operator
           package-type: container
-          min-versions-to-keep: 0  # Optional: Keeps at least 7 latest images
     
